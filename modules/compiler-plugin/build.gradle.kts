@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-    `kotlin-dsl`
     `maven-publish`
     kotlin("jvm")
     alias(libs.plugins.jetbrainsCompose)
