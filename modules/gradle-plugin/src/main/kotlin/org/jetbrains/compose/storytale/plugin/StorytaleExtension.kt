@@ -27,8 +27,8 @@ open class StorytaleExtension(internal val project: Project) {
     internal fun setupCommonStoriesSourceSetDependencies(sourceSet: KotlinSourceSet) {
         with(sourceSet) {
             dependencies {
-                implementation("org.jetbrains.compose.storytale:gallery:${StorytaleGradlePlugin.VERSION}")
-                implementation("org.jetbrains.compose.storytale:runtime-api:${StorytaleGradlePlugin.VERSION}")
+                implementation("io.github.aryapreetam.storytale:gallery:${StorytaleGradlePlugin.VERSION}")
+                implementation("io.github.aryapreetam.storytale:runtime-api:${StorytaleGradlePlugin.VERSION}")
             }
         }
     }

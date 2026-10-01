@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.mavenPublish) apply false
 }
 
 buildscript {
@@ -27,12 +28,14 @@ subprojects {
     plugins.withId("maven-publish") {
         configureIfExists<PublishingExtension> {
             repositories {
-                maven {
-                    name = "ComposeRepo"
-                    setUrl(System.getenv("COMPOSE_REPO_URL"))
-                    credentials {
-                        username = System.getenv("COMPOSE_REPO_USERNAME")
-                        password = System.getenv("COMPOSE_REPO_KEY")
+                if (!System.getenv("COMPOSE_REPO_URL").isNullOrBlank()) {
+                    maven {
+                        name = "ComposeRepo"
+                        setUrl(System.getenv("COMPOSE_REPO_URL"))
+                        credentials {
+                            username = System.getenv("COMPOSE_REPO_USERNAME")
+                            password = System.getenv("COMPOSE_REPO_KEY")
+                        }
                     }
                 }
             }

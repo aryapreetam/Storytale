@@ -24,7 +24,7 @@ class StorytaleCompilerPlugin : KotlinCompilerPluginSupportPlugin {
     }
 
     override fun getPluginArtifact(): SubpluginArtifact {
-        return SubpluginArtifact("org.jetbrains.compose.storytale", "local-compiler-plugin")
+        return SubpluginArtifact("io.github.aryapreetam.storytale", "local-compiler-plugin")
     }
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean {
@@ -60,7 +60,7 @@ apply<MakePreviewPublicCompilerPlugin>()
 
 configurations.all {
     resolutionStrategy.dependencySubstitution {
-        substitute(module("org.jetbrains.compose.storytale:local-compiler-plugin"))
+        substitute(module("io.github.aryapreetam.storytale:local-compiler-plugin"))
             .using(project(":modules:compiler-plugin"))
         substitute(module("org.jetbrains.compose.storytale.preview.public:local-compiler-plugin"))
             .using(project(":modules:preview-processor"))

@@ -1,10 +1,12 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-    `maven-publish`
     kotlin("jvm")
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.mavenPublish)
 }
 dependencies {
     compileOnly(compose.runtime)
@@ -32,20 +34,40 @@ sourceSets {
     }
 }
 
-group = "org.jetbrains.compose.storytale"
+group = "io.github.aryapreetam.storytale"
 
-val emptyJavadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
-}
+mavenPublishing {
+    configure(
+        KotlinJvm(
+            javadocJar = JavadocJar.Empty(),
+        ),
+    )
+    coordinates(group.toString(), "compiler-plugin", version.toString())
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "compiler-plugin"
-            from(components["kotlin"])
+    pom {
+        name.set("Storytale Compiler Plugin")
+        description.set("Kotlin compiler plugin for Storytale.")
+        url.set("https://github.com/aryapreetam/Storytale")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
         }
-        withType<MavenPublication> {
-            artifact(emptyJavadocJar)
+
+        developers {
+            developer {
+                id.set("aryapreetam")
+                name.set("Preetam Bhosle")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/aryapreetam/Storytale")
+            connection.set("scm:git:https://github.com/aryapreetam/Storytale.git")
+            developerConnection.set("scm:git:ssh://git@github.com/aryapreetam/Storytale.git")
+            tag.set("HEAD")
         }
     }
 }

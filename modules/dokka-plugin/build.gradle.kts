@@ -4,11 +4,12 @@
 
 plugins {
     `maven-publish`
+    signing
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.dokka)
 }
 
-group = "org.jetbrains.compose.storytale"
+group = "io.github.aryapreetam.storytale"
 
 repositories {
     mavenCentral()
@@ -48,6 +49,39 @@ publishing {
         }
         withType<MavenPublication> {
             artifact(emptyJavadocJar)
+
+            pom {
+                name.set("Storytale Dokka Plugin")
+                description.set("Dokka plugin for Storytale.")
+                url.set("https://github.com/aryapreetam/Storytale")
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("aryapreetam")
+                        name.set("Preetam Bhosle")
+                    }
+                }
+
+                scm {
+                    url.set("https://github.com/aryapreetam/Storytale")
+                    connection.set("scm:git:https://github.com/aryapreetam/Storytale.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/aryapreetam/Storytale.git")
+                    tag.set("HEAD")
+                }
+            }
         }
     }
+}
+
+signing {
+    useGpgCmd()
+    isRequired = true
+    sign(publishing.publications)
 }

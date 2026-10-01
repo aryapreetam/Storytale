@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.serialization)
-    `maven-publish`
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
@@ -104,9 +104,43 @@ kotlin {
     }
 }
 
-group = "org.jetbrains.compose.storytale"
+group = "io.github.aryapreetam.storytale"
 
-publishing {}
+mavenPublishing {
+    coordinates(group.toString(), "gallery", version.toString())
+
+    pom {
+        name.set("Storytale Gallery")
+        description.set("Compose Multiplatform gallery UI for Storytale.")
+        url.set("https://github.com/aryapreetam/Storytale")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("aryapreetam")
+                name.set("Preetam Bhosle")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/aryapreetam/Storytale")
+            connection.set("scm:git:https://github.com/aryapreetam/Storytale.git")
+            developerConnection.set("scm:git:ssh://git@github.com/aryapreetam/Storytale.git")
+            tag.set("HEAD")
+        }
+    }
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "org.jetbrains.compose.storytale.gallery.generated.resources"
+}
 
 android {
     namespace = "org.jetbrains.compose.storytale.gallery"

@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.declarations.IrProperty
@@ -136,9 +135,7 @@ private class MentionAllStoriesGettersInsideMainFunctionLowering(
 
     private fun IrProperty.isStory(factoryType: IrType) = isTopLevel &&
         isDelegated &&
-        backingField?.let {
-            it.origin == IrDeclarationOrigin.PROPERTY_DELEGATE && it.type == factoryType
-        } ?: false
+        backingField?.type == factoryType
 
     private fun IrSimpleFunction.isGeneratedMainViewController() = isTopLevel &&
         visibility.isPublicAPI &&

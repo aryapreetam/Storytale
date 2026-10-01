@@ -13,11 +13,11 @@ plugins {
 
 configurations.all {
     resolutionStrategy.dependencySubstitution {
-        substitute(module("org.jetbrains.compose.storytale:compiler-plugin"))
+        substitute(module("io.github.aryapreetam.storytale:compiler-plugin"))
             .using(project(":modules:compiler-plugin"))
-        substitute(module("org.jetbrains.compose.storytale:runtime-api"))
+        substitute(module("io.github.aryapreetam.storytale:runtime-api"))
             .using(project(":modules:runtime-api"))
-        substitute(module("org.jetbrains.compose.storytale:gallery"))
+        substitute(module("io.github.aryapreetam.storytale:gallery"))
             .using(project(":modules:gallery"))
     }
 }

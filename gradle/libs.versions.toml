@@ -8,13 +8,15 @@ assertj = "3.27.2"
 kotlinCompileTesting = "0.11.0"
 junitVersion = "4.13.2"
 storytale = "0.0.3+dev8"
+storytalePluginPublication = "0.0.5"
 
-compose-plugin = "1.10.0"
+compose-plugin = "1.10.1"
 compose-navigation = "2.9.1"
 kotlinx-serialization-json = "1.9.0"
-kotlin = "2.3.0"
+kotlin = "2.3.20"
 kotlin-poet = "2.2.0"
 build-time-config = "2.3.1"
+mavenPublish = "0.34.0"
 code-highlights = "1.1.0"
 spotless = "7.0.2"
 dokka = "2.1.0"
@@ -25,7 +27,7 @@ ktlint = "1.5.0"
 composeRules = "0.4.22"
 material3-icons = "1.7.3"
 material3-adaptive = "1.2.0"
-ksp = "2.2.21-2.0.4"
+ksp = "2.3.6"
 
 [libraries]
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
@@ -64,7 +66,8 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 buildTimeConfig = { id = "dev.limebeck.build-time-config", version.ref = "build-time-config" }
-storytale = { id = "org.jetbrains.compose.storytale", version.ref = "storytale" }
+storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 kotlinDsl = { id = "kotlin-dsl" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
