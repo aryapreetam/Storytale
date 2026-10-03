@@ -5,6 +5,7 @@ plugins {
     // in each subproject's classloader
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.compose.compiler) apply false
@@ -51,7 +52,7 @@ subprojects {
             ktlint(libs.ktlint.get().version)
                 .editorConfigOverride(
                     mapOf(
-                        "indent_size" to "2",
+                        "indent_size" to "4",
                         "ktlint_compose_modifier-missing-check" to "disabled",
                         "ktlint_compose_compositionlocal-allowlist" to "disabled",
                     ),
@@ -62,7 +63,7 @@ subprojects {
             target("*.gradle.kts")
             ktlint(libs.ktlint.get().version)
                 .editorConfigOverride(
-                    mapOf("indent_size" to "2"),
+                    mapOf("indent_size" to "4"),
                 )
         }
     }

@@ -11,11 +11,11 @@ import storytale.gallery.demo.generated.resources.compose_multiplatform
 
 @Composable
 fun ComposeLogo(
-  modifier: Modifier = Modifier.size(96.dp),
+    modifier: Modifier = Modifier.size(96.dp),
 ) {
-  Image(
-    painter = painterResource(Res.drawable.compose_multiplatform),
-    contentDescription = "Compose Multiplatform Logo",
-    modifier = modifier,
-  )
+    Image(
+        painter = painterResource(Res.drawable.compose_multiplatform),
+        contentDescription = "Compose Multiplatform Logo",
+        modifier = modifier,
+    )
 }

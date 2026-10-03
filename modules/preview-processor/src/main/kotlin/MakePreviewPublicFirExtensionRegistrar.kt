@@ -12,35 +12,35 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 
 class MakePreviewPublicFirExtensionRegistrar : FirExtensionRegistrar() {
-  companion object {
-    private val PREVIEW_ANNOTATION_FQ_NAME = FqName("org.jetbrains.compose.ui.tooling.preview.Preview")
-    private val ANDROIDX_PREVIEW_ANNOTATION_FQ_NAME = FqName("androidx.compose.ui.tooling.preview.Preview")
-    private val DESKTOP_PREVIEW_ANNOTATION_FQ_NAME = FqName("androidx.compose.desktop.ui.tooling.preview.Preview")
+    companion object {
+        private val PREVIEW_ANNOTATION_FQ_NAME = FqName("org.jetbrains.compose.ui.tooling.preview.Preview")
+        private val ANDROIDX_PREVIEW_ANNOTATION_FQ_NAME = FqName("androidx.compose.ui.tooling.preview.Preview")
+        private val DESKTOP_PREVIEW_ANNOTATION_FQ_NAME = FqName("androidx.compose.desktop.ui.tooling.preview.Preview")
 
-    private val PREVIEW_CLASS_IDS = setOf(
-      ClassId.topLevel(PREVIEW_ANNOTATION_FQ_NAME),
-      ClassId.topLevel(ANDROIDX_PREVIEW_ANNOTATION_FQ_NAME),
-      ClassId.topLevel(DESKTOP_PREVIEW_ANNOTATION_FQ_NAME),
-    )
-  }
-
-  override fun ExtensionRegistrarContext.configurePlugin() {
-    +FirStatusTransformerExtension.Factory { session -> Extension(session) }
-  }
-
-  class Extension(session: FirSession) : FirStatusTransformerExtension(session) {
-    override fun needTransformStatus(declaration: FirDeclaration): Boolean {
-      if (declaration !is FirNamedFunction) return false
-      return PREVIEW_CLASS_IDS.any { declaration.hasAnnotation(it, session) }
+        private val PREVIEW_CLASS_IDS = setOf(
+            ClassId.topLevel(PREVIEW_ANNOTATION_FQ_NAME),
+            ClassId.topLevel(ANDROIDX_PREVIEW_ANNOTATION_FQ_NAME),
+            ClassId.topLevel(DESKTOP_PREVIEW_ANNOTATION_FQ_NAME),
+        )
     }
 
-    override fun transformStatus(
-      status: FirDeclarationStatus,
-      function: FirNamedFunction,
-      containingClass: FirClassLikeSymbol<*>?,
-      isLocal: Boolean,
-    ): FirDeclarationStatus {
-      return status.transform(visibility = Visibilities.Public)
+    override fun ExtensionRegistrarContext.configurePlugin() {
+        +FirStatusTransformerExtension.Factory { session -> Extension(session) }
     }
-  }
+
+    class Extension(session: FirSession) : FirStatusTransformerExtension(session) {
+        override fun needTransformStatus(declaration: FirDeclaration): Boolean {
+            if (declaration !is FirNamedFunction) return false
+            return PREVIEW_CLASS_IDS.any { declaration.hasAnnotation(it, session) }
+        }
+
+        override fun transformStatus(
+            status: FirDeclarationStatus,
+            function: FirNamedFunction,
+            containingClass: FirClassLikeSymbol<*>?,
+            isLocal: Boolean,
+        ): FirDeclarationStatus {
+            return status.transform(visibility = Visibilities.Public)
+        }
+    }
 }

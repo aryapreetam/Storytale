@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.compileOnly
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.withType
@@ -6,14 +5,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
     jvm()
-    androidTarget()
+    android {
+        compileSdk = 35
+        namespace = "org.jetbrains.compose.storytale.preview.processor.test"
+        minSdk = 24
+        withHostTest {}
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -37,9 +41,7 @@ kotlin {
                 implementation(project(":modules:runtime-api"))
             }
         }
-        val androidUnitTest by getting {
-            dependsOn(jvmMain)
-
+        val androidHostTest by getting {
             dependencies {
                 implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.0")
             }
@@ -49,19 +51,6 @@ kotlin {
                 implementation("androidx.compose.ui:ui-tooling-preview-desktop:1.7.0")
             }
         }
-    }
-}
-
-android {
-    compileSdk = 35
-    namespace = "org.jetbrains.compose.storytale.preview.processor.test"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    defaultConfig {
-        minSdk = 24
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

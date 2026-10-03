@@ -3,6 +3,7 @@ package org.jetbrains.compose.storytale.plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
@@ -33,16 +34,17 @@ class StorytaleGradlePlugin : KotlinCompilerPluginSupportPlugin {
 
     private fun Project.processConfigurations(extension: StorytaleExtension) {
         extension.targets.all {
-            when (this) {
-                is KotlinJsIrTarget ->
+            when {
+                this is KotlinJsIrTarget ->
                     when (wasmTargetType) {
                         KotlinWasmTargetType.JS -> processWasmCompilation(extension, this)
                         null -> processJsCompilation(extension, this)
                         else -> {}
                     }
-                is KotlinAndroidTarget -> processAndroidCompilation(extension, this)
-                is KotlinJvmTarget -> processJvmCompilation(extension, this)
-                is KotlinNativeTarget -> processNativeCompilation(extension, this)
+                platformType == KotlinPlatformType.androidJvm || this is KotlinAndroidTarget ->
+                    processAndroidCompilation(extension, this)
+                this is KotlinJvmTarget -> processJvmCompilation(extension, this)
+                this is KotlinNativeTarget -> processNativeCompilation(extension, this)
             }
         }
     }

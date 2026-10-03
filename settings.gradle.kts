@@ -78,7 +78,8 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }
 
-include(":gallery-demo")
+include(":gallery-demo:composeApp")
+include(":gallery-demo:androidApp")
 include(":modules:gallery")
 includeBuild("modules/gradle-plugin")
 include(":modules:compiler-plugin")

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -6,35 +7,63 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.storytale)
     alias(libs.plugins.serialization)
-    alias(libs.plugins.mavenPublish)
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("io.github.aryapreetam.storytale:compiler-plugin"))
+            .using(project(":modules:compiler-plugin"))
+        substitute(module("io.github.aryapreetam.storytale:runtime-api"))
+            .using(project(":modules:runtime-api"))
+        substitute(module("io.github.aryapreetam.storytale:gallery"))
+            .using(project(":modules:gallery"))
+    }
 }
 
 kotlin {
+    val cmpProfile = providers.gradleProperty("cmpProfile").orNull ?: "1.10"
+
     js {
         browser()
+        binaries.executable()
     }
     wasmJs {
-        browser()
-    }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    jvm {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+        outputModuleName.set("gallery-demo")
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+            }
         }
+        binaries.executable()
     }
+
+    jvm("desktop")
+
     android {
-        namespace = "org.jetbrains.compose.storytale.gallery"
+        namespace = "storytale.gallery.demo"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = 24
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
+        }
+
+        withDeviceTest {
+        }
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
+    if (cmpProfile != "1.12") {
+        iosX64()
+    }
+    iosArm64()
+    iosSimulatorArm64()
 
     applyDefaultHierarchyTemplate()
 
@@ -44,8 +73,6 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
-                implementation(libs.material3.adaptive)
-                implementation(libs.material3.icons.core)
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
@@ -53,38 +80,21 @@ kotlin {
                 implementation(libs.compose.highlights)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(projects.modules.runtimeApi)
-                implementation(libs.navigation.compose)
+                implementation(projects.modules.gallery)
+                implementation(libs.material3.adaptive)
+                implementation(libs.material3.icons.core)
             }
         }
 
-        val mobileMain by creating {
-            dependsOn(commonMain)
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
         }
 
         val androidMain by getting {
-            dependsOn(mobileMain)
-        }
-
-        val iosMain by getting {
-            dependsOn(mobileMain)
-        }
-
-        val desktopMain by creating {
-            dependsOn(commonMain)
-        }
-
-        val jsMain by getting {
-            dependsOn(desktopMain)
-        }
-
-        val wasmJsMain by getting {
-            dependsOn(desktopMain)
-        }
-
-        val jvmMain by getting {
-            dependsOn(desktopMain)
             dependencies {
-                implementation(compose.desktop.currentOs)
+                implementation(libs.androidx.activity.compose)
             }
         }
     }
@@ -107,40 +117,10 @@ kotlin {
     }
 }
 
-group = "io.github.aryapreetam.storytale"
-
-mavenPublishing {
-    coordinates(group.toString(), "gallery", version.toString())
-
-    pom {
-        name.set("Storytale Gallery")
-        description.set("Compose Multiplatform gallery UI for Storytale.")
-        url.set("https://github.com/aryapreetam/Storytale")
-
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-            }
-        }
-
-        developers {
-            developer {
-                id.set("aryapreetam")
-                name.set("Preetam Bhosle")
-            }
-        }
-
-        scm {
-            url.set("https://github.com/aryapreetam/Storytale")
-            connection.set("scm:git:https://github.com/aryapreetam/Storytale.git")
-            developerConnection.set("scm:git:ssh://git@github.com/aryapreetam/Storytale.git")
-            tag.set("HEAD")
-        }
-    }
+compose.resources {
+    packageOfResClass = "storytale.gallery.demo.generated.resources"
 }
 
-compose.resources {
-    publicResClass = true
-    packageOfResClass = "org.jetbrains.compose.storytale.gallery.generated.resources"
+composeCompiler {
+    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
