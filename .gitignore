@@ -18,3 +18,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 docs-to-ignore/*
+site/

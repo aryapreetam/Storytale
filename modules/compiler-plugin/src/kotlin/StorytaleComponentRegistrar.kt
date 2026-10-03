@@ -5,17 +5,17 @@ import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
 class StorytaleComponentRegistrar : CompilerPluginRegistrar() {
-    override val supportsK2: Boolean get() = true
+  override val supportsK2: Boolean get() = true
 
-    override val pluginId: String = "org.jetbrains.compose.storytale.compiler-plugin"
+  override val pluginId: String = "io.github.aryapreetam.storytale.compiler-plugin"
 
-    override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        Companion.registerExtensions(this)
+  override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
+    Companion.registerExtensions(this)
+  }
+
+  companion object {
+    fun registerExtensions(extensionStorage: ExtensionStorage) = with(extensionStorage) {
+      IrGenerationExtension.registerExtension(StorytaleLoweringExtension())
     }
-
-    companion object {
-        fun registerExtensions(extensionStorage: ExtensionStorage) = with(extensionStorage) {
-            IrGenerationExtension.registerExtension(StorytaleLoweringExtension())
-        }
-    }
+  }
 }

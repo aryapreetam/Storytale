@@ -2,13 +2,13 @@
 agp = "8.11.0"
 android-targetSdk = "36"
 android-compileSdk = "36"
-android-minSdk = "26"
+android-minSdk = "30"
 androidx-activityCompose = "1.12.2"
 assertj = "3.27.2"
-kotlinCompileTesting = "0.11.0"
+kotlinCompileTesting = "0.12.1"
 junitVersion = "4.13.2"
-storytale = "0.0.3+dev8"
-storytalePluginPublication = "0.0.5"
+storytale = "0.0.6"
+storytalePluginPublication = "0.0.6"
 
 compose-plugin = "1.10.1"
 compose-navigation = "2.9.1"
@@ -28,6 +28,7 @@ composeRules = "0.4.22"
 material3-icons = "1.7.3"
 material3-adaptive = "1.2.0"
 ksp = "2.3.6"
+gradle-plugin-publish = "2.1.1"
 
 [libraries]
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
@@ -73,3 +74,4 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+gradlePluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }

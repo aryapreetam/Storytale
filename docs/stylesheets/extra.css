@@ -1,0 +1,80 @@
+/* Font overrides for code elements */
+code,
+kbd,
+pre,
+.md-typeset pre code {
+    font-family: "JetBrains Mono", "Monaco", "Courier New", monospace !important;
+}
+
+/* Widescreen layout */
+.md-grid {
+    max-width: 80rem;
+}
+
+/* Storytale interactive showcase iframe */
+.storytale-gallery-container {
+    width: 100%;
+    margin: 2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--md-default-fg-color--lightest, rgba(128, 128, 128, 0.2));
+    background-color: var(--md-default-bg-color, #ffffff);
+}
+
+.storytale-gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--md-default-bg-color--lighter, rgba(128, 128, 128, 0.08));
+    border-bottom: 1px solid var(--md-default-fg-color--lightest, rgba(128, 128, 128, 0.15));
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.storytale-gallery-header .dots {
+    display: flex;
+    gap: 6px;
+}
+
+.storytale-gallery-header .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(128, 128, 128, 0.4);
+}
+
+.storytale-gallery-iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    display: block;
+}
+
+/* Hero Feature Badges */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--md-default-fg-color--lightest, rgba(128, 128, 128, 0.15));
+    background-color: var(--md-default-bg-color--lighter, rgba(128, 128, 128, 0.04));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.feature-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.15rem;
+}

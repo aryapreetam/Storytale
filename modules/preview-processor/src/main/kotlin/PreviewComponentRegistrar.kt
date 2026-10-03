@@ -5,9 +5,10 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 
 @OptIn(ExperimentalCompilerApi::class)
 class PreviewComponentRegistrar : CompilerPluginRegistrar() {
-    override val supportsK2: Boolean get() = true
+  override val pluginId: String get() = "org.jetbrains.compose.compiler.plugins.storytale.preview.public"
+  override val supportsK2: Boolean get() = true
 
-    override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        FirExtensionRegistrarAdapter.registerExtension(MakePreviewPublicFirExtensionRegistrar())
-    }
+  override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
+    FirExtensionRegistrarAdapter.registerExtension(MakePreviewPublicFirExtensionRegistrar())
+  }
 }

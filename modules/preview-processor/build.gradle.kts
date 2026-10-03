@@ -1,10 +1,9 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
-    implementation(libs.kotlin.poet)
-    implementation(libs.ksp.api)
-    implementation(kotlin("compiler-embeddable"))
-    implementation("io.github.aryapreetam.storytale:gradle-plugin")
+  implementation(libs.kotlin.poet)
+  implementation(libs.ksp.api)
+  implementation(kotlin("compiler-embeddable"))
 }

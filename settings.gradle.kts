@@ -17,6 +17,30 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+    val cmpProfile = providers.gradleProperty("cmpProfile").orNull ?: "1.10"
+    versionCatalogs {
+        create("libs") {
+            when (cmpProfile) {
+                "1.10" -> {
+                    version("kotlin", "2.3.20")
+                    version("compose-plugin", "1.10.1")
+                }
+                "1.12" -> {
+                    version("compose-plugin", "1.12.1")
+                }
+                else -> error("Invalid cmpProfile '$cmpProfile'. Supported values are: '1.10', '1.12'.")
+            }
+
+            val kotlinOverride = providers.gradleProperty("kotlinVersion").orNull
+            if (!kotlinOverride.isNullOrBlank()) {
+                version("kotlin", kotlinOverride)
+            }
+            val composeOverride = providers.gradleProperty("composeVersion").orNull
+            if (!composeOverride.isNullOrBlank()) {
+                version("compose-plugin", composeOverride)
+            }
+        }
+    }
     repositories {
         google {
             mavenContent {
@@ -54,7 +78,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }
 
-include(":examples")
 include(":gallery-demo")
 include(":modules:gallery")
 includeBuild("modules/gradle-plugin")

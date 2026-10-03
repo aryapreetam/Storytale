@@ -1,0 +1,80 @@
+site_name: Storytale
+site_description: Component-driven UI development and storybook gallery for Compose Multiplatform.
+site_author: Preetam Arya
+site_url: https://aryapreetam.github.io/storytale/
+repo_url: https://github.com/aryapreetam/storytale
+repo_name: aryapreetam/storytale
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: JetBrains Mono
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search
+  - blog:
+      archive: false
+      categories: false
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - md_in_html
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Your First Story: getting-started/first-story.md
+  - Guides:
+      - Parameters & State: guides/parameters.md
+      - Decorators & Theming: guides/decorators.md
+      - Multiplatform Workflows: guides/multiplatform.md
+  - Blog:
+      - Announcements: blog/index.md
+  - Reference:
+      - API Reference: https://aryapreetam.github.io/storytale/api/
+      - Live Web Showcase: https://aryapreetam.github.io/storytale/gallery/

@@ -12,91 +12,91 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.buildCodeBlock
-import org.jetbrains.compose.storytale.plugin.StorytaleGradlePlugin
+private const val STORYTALE_PACKAGE = "org.jetbrains.compose.storytale.generated"
 
 class PreviewProcessor(
-    private val logger: KSPLogger,
-    private val codeGenerator: CodeGenerator,
+  private val logger: KSPLogger,
+  private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
-    override fun process(resolver: Resolver): List<KSAnnotated> {
-        val (jetbrains, discarded1) =
-            resolver.getSymbolsWithAnnotation("org.jetbrains.compose.ui.tooling.preview.Preview")
-                .partition { it.validate() }
-        val (androidxDesktop, discarded2) = resolver.getSymbolsWithAnnotation("androidx.compose.desktop.ui.tooling.preview.Preview")
-            .partition { it.validate() }
+  override fun process(resolver: Resolver): List<KSAnnotated> {
+    val (jetbrains, discarded1) =
+      resolver.getSymbolsWithAnnotation("org.jetbrains.compose.ui.tooling.preview.Preview")
+        .partition { it.validate() }
+    val (androidxDesktop, discarded2) = resolver.getSymbolsWithAnnotation("androidx.compose.desktop.ui.tooling.preview.Preview")
+      .partition { it.validate() }
 
-        val (androidxAndroid, discarded3) = resolver.getSymbolsWithAnnotation("androidx.compose.ui.tooling.preview.Preview")
-            .partition { it.validate() }
+    val (androidxAndroid, discarded3) = resolver.getSymbolsWithAnnotation("androidx.compose.ui.tooling.preview.Preview")
+      .partition { it.validate() }
 
-        val validPreviewFunctions = (jetbrains + androidxDesktop + androidxAndroid)
-            .filter { it is KSFunctionDeclaration && it.validate() }
-            .map { it as KSFunctionDeclaration }
-            .sortedBy { (it.qualifiedName ?: it.simpleName).asString() }
+    val validPreviewFunctions = (jetbrains + androidxDesktop + androidxAndroid)
+      .filter { it is KSFunctionDeclaration && it.validate() }
+      .map { it as KSFunctionDeclaration }
+      .sortedBy { (it.qualifiedName ?: it.simpleName).asString() }
 
-        generatePreviewFile(validPreviewFunctions)
+    generatePreviewFile(validPreviewFunctions)
 
-        return discarded1 + discarded2 + discarded3
-    }
+    return discarded1 + discarded2 + discarded3
+  }
 
-    private fun generatePreviewFile(previewFunctions: List<KSFunctionDeclaration>) {
-        if (previewFunctions.isEmpty()) return
+  private fun generatePreviewFile(previewFunctions: List<KSFunctionDeclaration>) {
+    if (previewFunctions.isEmpty()) return
 
-        val packageName = StorytaleGradlePlugin.STORYTALE_PACKAGE
-        val fileSpecBuilder = FileSpec.builder(
-            packageName,
-            "Previews.story",
-        ).apply {
-            indent("    ")
-            addImport("org.jetbrains.compose.storytale", "story")
+    val packageName = STORYTALE_PACKAGE
+    val fileSpecBuilder = FileSpec.builder(
+      packageName,
+      "Previews.story",
+    ).apply {
+      indent("    ")
+      addImport("org.jetbrains.compose.storytale", "story")
 
-            previewFunctions.forEach { function ->
-                addImport(function.packageName.asString(), function.simpleName.asString())
+      previewFunctions.forEach { function ->
+        addImport(function.packageName.asString(), function.simpleName.asString())
 
-                val functionName = function.simpleName.asString()
-                val storyName = functionName.removePrefix("Preview").removeSuffix("Preview")
+        val functionName = function.simpleName.asString()
+        val storyName = functionName.removePrefix("Preview").removeSuffix("Preview")
 
-                addProperty(
-                    PropertySpec
-                        .builder(
-                            storyName.ifEmpty { functionName },
-                            ClassName("org.jetbrains.compose.storytale", "Story"),
-                        )
-                        .delegate(
-                            buildCodeBlock {
-                                beginControlFlow("story")
-                                addStatement("%N()", functionName)
-                                endControlFlow()
-                            },
-                        )
-                        .build(),
-                )
-            }
-        }
-
-        val containingFiles = previewFunctions
-            .mapNotNull { it.containingFile }
-            .distinct()
-
-        val dependencies = if (containingFiles.isNotEmpty()) {
-            Dependencies(true, containingFiles.first())
-        } else {
-            Dependencies.ALL_FILES
-        }
-
-        val file = codeGenerator.createNewFile(
-            dependencies,
-            packageName,
-            "Previews.story",
-        )
-        fileSpecBuilder.build().toJavaFileObject().openInputStream().copyTo(file)
-    }
-
-    class Provider : SymbolProcessorProvider {
-        override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-            return PreviewProcessor(
-                environment.logger,
-                environment.codeGenerator,
+        addProperty(
+          PropertySpec
+            .builder(
+              storyName.ifEmpty { functionName },
+              ClassName("org.jetbrains.compose.storytale", "Story"),
             )
-        }
+            .delegate(
+              buildCodeBlock {
+                beginControlFlow("story")
+                addStatement("%N()", functionName)
+                endControlFlow()
+              },
+            )
+            .build(),
+        )
+      }
     }
+
+    val containingFiles = previewFunctions
+      .mapNotNull { it.containingFile }
+      .distinct()
+
+    val dependencies = if (containingFiles.isNotEmpty()) {
+      Dependencies(true, containingFiles.first())
+    } else {
+      Dependencies.ALL_FILES
+    }
+
+    val file = codeGenerator.createNewFile(
+      dependencies,
+      packageName,
+      "Previews.story",
+    )
+    fileSpecBuilder.build().toJavaFileObject().openInputStream().copyTo(file)
+  }
+
+  class Provider : SymbolProcessorProvider {
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+      return PreviewProcessor(
+        environment.logger,
+        environment.codeGenerator,
+      )
+    }
+  }
 }

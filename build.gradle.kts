@@ -22,7 +22,9 @@ buildscript {
 }
 
 subprojects {
+    group = findProperty("storytale.deploy.group") ?: findProperty("libGroup") ?: "io.github.aryapreetam.storytale"
     version = findProperty("storytale.deploy.version")
+        ?: findProperty("libVersion")
         ?: error("'storytale.deploy.version' was not set")
 
     plugins.withId("maven-publish") {
@@ -49,7 +51,7 @@ subprojects {
             ktlint(libs.ktlint.get().version)
                 .editorConfigOverride(
                     mapOf(
-                        "indent_size" to "4",
+                        "indent_size" to "2",
                         "ktlint_compose_modifier-missing-check" to "disabled",
                         "ktlint_compose_compositionlocal-allowlist" to "disabled",
                     ),
@@ -60,7 +62,7 @@ subprojects {
             target("*.gradle.kts")
             ktlint(libs.ktlint.get().version)
                 .editorConfigOverride(
-                    mapOf("indent_size" to "4"),
+                    mapOf("indent_size" to "2"),
                 )
         }
     }
@@ -68,4 +70,30 @@ subprojects {
 
 inline fun <reified T> Project.configureIfExists(fn: T.() -> Unit) {
     extensions.findByType(T::class.java)?.fn()
+}
+
+gradle.projectsEvaluated {
+    tasks.register("publishToMavenCentral") {
+        group = "publishing"
+        description = "Publish all subprojects and included gradle-plugin to Maven Central"
+
+        subprojects.forEach { subproject ->
+            if (subproject.plugins.hasPlugin("com.vanniktech.maven.publish")) {
+                dependsOn(subproject.tasks.matching { it.name == "publishToMavenCentral" })
+            }
+        }
+        dependsOn(gradle.includedBuild("gradle-plugin").task(":publishToMavenCentral"))
+    }
+
+    tasks.register("publishToMavenLocal") {
+        group = "publishing"
+        description = "Publish all subprojects and included gradle-plugin to Maven Local"
+
+        subprojects.forEach { subproject ->
+            if (subproject.plugins.hasPlugin("maven-publish")) {
+                dependsOn(subproject.tasks.matching { it.name == "publishToMavenLocal" })
+            }
+        }
+        dependsOn(gradle.includedBuild("gradle-plugin").task(":publishToMavenLocal"))
+    }
 }
