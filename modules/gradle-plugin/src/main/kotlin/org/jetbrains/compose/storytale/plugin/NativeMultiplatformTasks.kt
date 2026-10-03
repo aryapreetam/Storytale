@@ -6,7 +6,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Property
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.task
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -113,19 +112,15 @@ private fun Project.createNativeStorytaleExecTask(
     inputs.property("deviceId", deviceId)
 
     doLast {
-      exec {
-        workingDir = unzipXCodeProjectTask.outputDir.get().asFile
-        commandLine(
-          "/usr/bin/xcrun",
-          "simctl",
-          "launch",
-          deviceId.get(),
-          StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_PATH,
-        )
-      }
-      exec {
-        commandLine("/usr/bin/open", "-a", "Simulator")
-      }
+      runProcess(
+        "/usr/bin/xcrun",
+        "simctl",
+        "launch",
+        deviceId.get(),
+        StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_PATH,
+        workingDir = unzipXCodeProjectTask.outputDir.get().asFile,
+      )
+      runProcess("/usr/bin/open", "-a", "Simulator")
     }
   }
 }
@@ -157,7 +152,7 @@ private fun Project.createSimulatorRegistrationTask(unzipResourceTask: UnzipReso
       project.logger.info("Using iOS simulator: ${selectedDevice.name} (${selectedDevice.udid}) [runtime: ${selectedDevice.runtimeName}, booted: ${selectedDevice.isBooted}]")
 
       if (!selectedDevice.isBooted) {
-        exec { commandLine("/usr/bin/xcrun", "simctl", "boot", selectedDevice.udid) }
+        runProcess("/usr/bin/xcrun", "simctl", "boot", selectedDevice.udid)
       }
 
       deviceIdProperty.set(selectedDevice.udid)
@@ -270,25 +265,23 @@ private fun Project.createBuildTask(
     doLast {
       val frameworkPath = linkTask.destinationDirectory.asFile.get().path
       val arch = if (target.konanTarget === KonanTarget.IOS_SIMULATOR_ARM64) "arm64" else "x86_64"
-      exec {
-        workingDir = xcodeProjectPath
-        commandLine(
-          "/usr/bin/xcodebuild",
-          "clean",
-          "build",
-          "-project",
-          "${StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME}/${StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME}.xcodeproj",
-          "-scheme",
-          StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME,
-          "-destination",
-          "id=${deviceId.get()}",
-          "-derivedDataPath",
-          StorytaleGradlePlugin.DERIVED_DATA_DIRECTORY_NAME,
-          "ARCHS=$arch",
-          "ONLY_ACTIVE_ARCH=NO",
-          "FRAMEWORK_SEARCH_PATHS=$frameworkPath",
-        )
-      }
+      runProcess(
+        "/usr/bin/xcodebuild",
+        "clean",
+        "build",
+        "-project",
+        "${StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME}/${StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME}.xcodeproj",
+        "-scheme",
+        StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME,
+        "-destination",
+        "id=${deviceId.get()}",
+        "-derivedDataPath",
+        StorytaleGradlePlugin.DERIVED_DATA_DIRECTORY_NAME,
+        "ARCHS=$arch",
+        "ONLY_ACTIVE_ARCH=NO",
+        "FRAMEWORK_SEARCH_PATHS=$frameworkPath",
+        workingDir = xcodeProjectPath,
+      )
     }
   }
 }
@@ -341,17 +334,15 @@ private fun Project.createInstallApplicationToSimulatorTask(
     inputs.property("deviceId", deviceId)
 
     doLast {
-      exec {
-        workingDir = unzipResourceTask.outputDir.get().asFile
-        val appPath = "${StorytaleGradlePlugin.DERIVED_DATA_DIRECTORY_NAME}/Build/Products/${StorytaleGradlePlugin.LINK_BUILD_VERSION}-$platform/${StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME}.app"
-        commandLine(
-          "/usr/bin/xcrun",
-          "simctl",
-          "install",
-          deviceId.get(),
-          appPath,
-        )
-      }
+      val appPath = "${StorytaleGradlePlugin.DERIVED_DATA_DIRECTORY_NAME}/Build/Products/${StorytaleGradlePlugin.LINK_BUILD_VERSION}-$platform/${StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_NAME}.app"
+      runProcess(
+        "/usr/bin/xcrun",
+        "simctl",
+        "install",
+        deviceId.get(),
+        appPath,
+        workingDir = unzipResourceTask.outputDir.get().asFile,
+      )
     }
   }
 }

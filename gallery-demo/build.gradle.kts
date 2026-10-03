@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
+  alias(libs.plugins.androidApplication)
   alias(libs.plugins.jetbrainsCompose)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.storytale)
@@ -21,6 +23,8 @@ configurations.all {
 }
 
 kotlin {
+  val cmpProfile = providers.gradleProperty("cmpProfile").orNull ?: "1.10"
+
   js {
     browser()
     binaries.executable()
@@ -36,6 +40,19 @@ kotlin {
   }
 
   jvm("desktop")
+
+  androidTarget {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_11)
+    }
+  }
+
+  if (cmpProfile != "1.12") {
+    iosX64()
+  }
+  iosArm64()
+  iosSimulatorArm64()
 
   applyDefaultHierarchyTemplate()
 
@@ -63,6 +80,12 @@ kotlin {
         implementation(compose.desktop.currentOs)
       }
     }
+
+    val androidMain by getting {
+      dependencies {
+        implementation(libs.androidx.activity.compose)
+      }
+    }
   }
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -85,6 +108,31 @@ kotlin {
 
 compose.resources {
   packageOfResClass = "storytale.gallery.demo.generated.resources"
+}
+
+android {
+  namespace = "storytale.gallery.demo"
+  compileSdk = libs.versions.android.compileSdk.get().toInt()
+  defaultConfig {
+    applicationId = "storytale.gallery.demo"
+    minSdk = libs.versions.android.minSdk.get().toInt()
+    targetSdk = libs.versions.android.targetSdk.get().toInt()
+    versionCode = 1
+    versionName = "1.0"
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+  }
+  buildFeatures {
+    compose = true
+  }
+  buildTypes {
+    maybeCreate("Stories").apply {
+      signingConfig = signingConfigs.getByName("debug")
+      matchingFallbacks += listOf("debug", "release")
+    }
+  }
 }
 
 composeCompiler {

@@ -1,0 +1,29 @@
+[versions]
+agp = "9.1.0"
+android-targetSdk = "36"
+android-compileSdk = "36"
+android-minSdk = "30"
+androidx-activityCompose = "1.12.2"
+storytale = "0.0.6"
+
+compose-plugin = "1.10.1"
+compose-navigation = "2.9.1"
+kotlinx-serialization-json = "1.9.0"
+kotlin = "2.3.20"
+material3-icons = "1.7.3"
+material3-adaptive = "1.2.0"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
+material3-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material3-icons" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }

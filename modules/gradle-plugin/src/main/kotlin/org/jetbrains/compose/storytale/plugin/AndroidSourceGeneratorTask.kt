@@ -84,7 +84,7 @@ open class AndroidSourceGeneratorTask : DefaultTask() {
                 android:label="${StorytaleGradlePlugin.STORYTALE_NATIVE_APP_NAME}"
                 android:theme="@android:style/Theme.Material.NoActionBar">
                 <activity
-                    android:name=".stories.StorytaleAppActivity"
+                    android:name="$appPackageName.StorytaleAppActivity"
                     android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
                     android:launchMode="singleInstance"
                     android:windowSoftInputMode="adjustPan"

@@ -131,12 +131,31 @@ fun getArchivesFromResources(compilation: KotlinCompilation<*>): FileCollection 
     }.files
 }
 
-fun Project.execute(vararg args: String): String = ByteArrayOutputStream().apply {
-    exec {
-        commandLine(*args)
-        standardOutput = this@apply
+fun String.capitalized(): String = replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+
+fun runProcess(vararg args: String, workingDir: File? = null): String {
+    val process = ProcessBuilder(*args).apply {
+        if (workingDir != null) directory(workingDir)
+    }.start()
+    val output = process.inputStream.bufferedReader().readText()
+    val exitCode = process.waitFor()
+    if (exitCode != 0) {
+        val error = process.errorStream.bufferedReader().readText()
+        throw org.gradle.api.GradleException("Command failed with exit code $exitCode: ${args.joinToString(" ")}\n$error")
     }
-}.toString()
+    return output
+}
+
+fun runProcessIgnoreExit(vararg args: String, workingDir: File? = null): String {
+    val process = ProcessBuilder(*args).apply {
+        if (workingDir != null) directory(workingDir)
+    }.start()
+    val output = process.inputStream.bufferedReader().readText()
+    process.waitFor()
+    return output
+}
+
+fun Project.execute(vararg args: String): String = runProcessIgnoreExit(*args)
 
 @Suppress("SpellCheckingInspection")
 fun File.createDirectory() {
