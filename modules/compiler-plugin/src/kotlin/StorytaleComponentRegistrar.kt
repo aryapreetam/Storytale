@@ -14,8 +14,19 @@ class StorytaleComponentRegistrar : CompilerPluginRegistrar() {
     }
 
     companion object {
-        fun registerExtensions(extensionStorage: ExtensionStorage) = with(extensionStorage) {
-            IrGenerationExtension.registerExtension(StorytaleLoweringExtension())
+        fun registerExtensions(extensionStorage: ExtensionStorage) {
+            val extension = StorytaleLoweringExtension()
+            val companion = IrGenerationExtension::class.java.getField("Companion").get(null)
+            val registerMethod = extensionStorage.javaClass.methods.firstOrNull {
+                it.name == "registerExtension" && it.parameterTypes.size == 2
+            }
+            if (registerMethod != null) {
+                registerMethod.invoke(extensionStorage, companion, extension)
+            } else {
+                with(extensionStorage) {
+                    IrGenerationExtension.registerExtension(extension)
+                }
+            }
         }
     }
 }

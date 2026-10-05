@@ -1,155 +1,151 @@
-![Frame 482360](https://github.com/user-attachments/assets/b90b5776-f2f4-4385-8b7d-94eb912eacdf)
-
-[![Incubator](https://jb.gg/badges/incubator-plastic.svg)](https://github.com/JetBrains#jetbrains-on-github)
+![Hero Image](https://github.com/user-attachments/assets/b90b5776-f2f4-4385-8b7d-94eb912eacdf)
 
 # Storytale
 
-Storytale is a Gradle Plugin designed to help developers to show their composables and develop them isolated by generating a gallery of the project components.
-Check the `examples` and their generated web gallery [here](https://kotlin.github.io/Storytale)
+Component-driven UI development and story gallery for Compose Multiplatform.
 
-Since Storytale is still in the early stages of development, the api is marked as unstable, but this section will also show you how to use `Storytale` to write code for your components, so let's get started! 🌟
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.aryapreetam.storytale/gradle-plugin?label=Maven%20Central&color=6366F1)](https://search.maven.org/artifact/io.github.aryapreetam.storytale/gradle-plugin/0.0.6/jar)
+[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin%20Multiplatform-2.3+-7F52FF?logo=kotlin&logoColor=white)](https://github.com/aryapreetam/storytale)
+[![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.10+-4285F4?logo=jetpackcompose&logoColor=white)](https://www.jetbrains.com/lp/compose-multiplatform/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+> [!NOTE]
+> **Fork Notice**: This is a maintained fork of [Kotlin/Storytale](https://github.com/Kotlin/Storytale) supporting Kotlin 2.3+, Compose Multiplatform 1.10+, AGP 9.1+, and Maven Central distribution. It will be archived once upstream is officially released.
+
+Storytale isolates your `@Composable` components and compiles a standalone, interactive component gallery app running across **Android, iOS, Desktop (JVM), and Web (Wasm)**.
+
+[Your first story ↗](https://aryapreetam.github.io/storytale/getting-started/first-story) | [Read the Documentation ↗](https://aryapreetam.github.io/storytale/) | [Live Web Gallery Demo ↗](https://aryapreetam.github.io/storytale/gallery/)
 
 <img width="1604" alt="All platforms" src="https://github.com/user-attachments/assets/b9a3d08f-7ff5-4a55-a0fc-904b4279e116">
 
+---
+
 ## ⚙️ Getting Started
 
-### 1. Setup
+### 1. Add the Plugin
 
-#### Import Dependencies
+Storytale is published to **Maven Central** and the **Gradle Plugin Portal**.
 
-<details close>
-  <summary>using <b>Version Catalog</b></summary>
-
-> **libs.versions.toml**
+#### Using Version Catalog (`gradle/libs.versions.toml`)
 
 ```toml
 [versions]
-storytale = "0.0.4-alpha01+dev19"
+storytale = "0.0.6"
 
 [plugins]
-storytale = { id = "org.jetbrains.compose.storytale", version.ref = "storytale" }
+storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }
 ```
 
-For the latest version check out the [Releases page](https://github.com/Kotlin/Storytale/releases)
+In your shared UI module (`composeApp/build.gradle.kts` or `shared/build.gradle.kts`):
 
-> **build.gradle.kts** `root level`
 ```kotlin
 plugins {
-  alias(libs.plugins.storytale) apply false
-}
-```
-</details>
-
-> **build.gradle.kts** `app level`
-```kotlin
-plugins {
-  alias(libs.plugins.storytale)
-}
-```
-</details>
-
-```kotlin
-repositories {
-  mavenCentral()
-  maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.storytale)
 }
 ```
 
-> [!NOTE]  
-> Storytale **has not** yet released its first version on `mavenCentral`. Currently, we publish dev builds to maven("https://maven.pkg.jetbrains.space/public/p/compose/dev"), so it's required to add this repository as shown above.
+Ensure `mavenCentral()` and `gradlePluginPortal()` are declared in your `settings.gradle.kts`.
 
-### 2. Create Sourcesets for Storytale on the target platform (for multi-platform projects)
+---
 
-Storytale can be used for Compose Multiplatform projects. To start using the Storytale API, you need to define a sourceset for the component you want to test (for example, it might only be used for `Android/iOS` platforms, or it could be common for all platforms).
+### 2. Create a Stories Source Set
 
-In your app's 'src' folder, go to New -> Directory:
+Storytale isolates gallery and test code in dedicated story source sets alongside production code:
 
-<img width="355" alt="image" src="https://github.com/user-attachments/assets/a9dc68a9-3a28-4d26-a128-f0372b52d08b">
-
-### 3. Usage
-
-Now, your project structure will look like this:
-
-```
+```text
+shared/
 └── src/
-    ├── androidMain
-    ├── commonMain
-    ├── xxxxxStories/
-    │   └── kotlin
-    └── desktopMain
+    ├── commonMain/kotlin/…        # Production components
+    └── commonStories/kotlin/     # Story definitions
 ```
 
-Let's try to write a simple function in `commonMain`:
+Use `commonStories` for stories shared across all platforms, or target-specific sets like `androidStories`, `iosStories`, `desktopStories`, or `wasmStories`.
 
-`commonMain/PrimaryButton.kt`
-```kotlin
-@Composable
-fun PrimaryButton(onClick: () -> Unit, enabled: Boolean = true) {
-  Button(onClick = onClick, enabled = enabled) {
-    Text("Click me!")
-  }
-}
-```
+---
 
-`commonStories/kotlin/PrimaryButton.story.kt`
+### 3. Write a Story
+
+In `src/commonStories/kotlin/PrimaryButton.story.kt`:
+
 ```kotlin
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import org.jetbrains.compose.storytale.story
 
-val `PrimaryButton default state` by story {
-   val enabled by parameter(true)
-   PrimaryButton(onClick = {}, enabled = enabled)
+@Composable
+fun PrimaryButton(onClick: () -> Unit, enabled: Boolean = true) {
+    Button(onClick = onClick, enabled = enabled) {
+        Text("Click me!")
+    }
+}
+
+val `Primary Button default state` by story {
+    val enabled by parameter(true)
+    PrimaryButton(onClick = {}, enabled = enabled)
 }
 ```
 
-Next, let's run the `desktopStoriesRun` command, you can find it in the `project/Storytale` section on the right side of the Gradle panel.
+---
 
-<img width="485" alt="image" src="https://github.com/user-attachments/assets/a4ff8e1a-b549-4085-bac3-a4e6f8f246aa">
+### 4. Run the Story Gallery
 
-If you can't find all Gradle tasks containing `Storytale` after syncing, check if this option is enabled:
+Execute the runner task for your target platform:
 
-`settings->Experimental`
+```bash
+# Desktop (JVM)
+./gradlew desktopStoriesRun  # OR ./gradlew jvmStoriesRun 
 
-<img width="624" alt="image" src="https://github.com/user-attachments/assets/eed99739-121e-49ce-82ad-2217676a5869">
+# Web (Wasm)
+./gradlew wasmJsBrowserStoriesDevelopmentRun
 
+# Android (device or emulator)
+./gradlew androidStoriesRun
 
-## Building and Contributing
-
-Once the sync is successful, run `./gradlew publishToMavenLocal`.
-
-At this point, if you see these Storytale `Gradle tasks`, it means you’ve successfully set up the project and can start contributing! :)
-
-<img width="453" alt="image" src="https://github.com/user-attachments/assets/e9cfa634-27f2-4613-9579-194c3e6c09a4">
-
-Before running `XXXXStoriesRun`, you need to run `./gradlew publishToMavenLocal` to deploy the latest changes if you've modified any part of the code (except for examples module)
-
-#### About project structure
-
-```
-.
-└── modules/
-    ├── compiler-plugin
-    ├── gallery
-    ├── gradle-plugin
-    └── runtime
+# iOS Simulator
+./gradlew iosSimulatorArm64StoriesRun
 ```
 
-##### compiler-plugin
+---
 
-Includes the entry point of the Storytale compiler plugin and its related features.
+## Toolchain Compatibility
 
-##### gallery
+| Component | Supported Version | Notes |
+| :--- | :--- | :--- |
+| **Kotlin** | `2.3.0`+ | Compatible with FIR K2 compiler plugin ABI. |
+| **Compose Multiplatform** | `1.8.0` – `1.12.x` | Verified on `1.10.1` and `1.12.0`. |
+| **Android Gradle Plugin** | `8.8.0` – `9.1.0` | Compatible with AGP 9.1 and Kotlin Multiplatform Android libraries. |
+| **Gradle** | `8.10` – `9.3+` | Configuration-cache compatible tasks. |
+| **JDK Host** | `17` or `21` | Required for Gradle daemon and Kotlin compiler execution. |
 
-The gallery represents the final, fully functional multi-platform application that is produced by Storytale.
+---
 
-##### gradle-plugin
+## Documentation
 
-All aspects related to building Storytale, including various Gradle tasks, generating Storytale apps for different platforms, and so on.
+Full guides and references are hosted at **[aryapreetam.github.io/storytale](https://aryapreetam.github.io/storytale/)**:
+- [Installation Guide](https://aryapreetam.github.io/storytale/getting-started/installation/)
+- [Writing Your First Story](https://aryapreetam.github.io/storytale/getting-started/first-story/)
+- [Parameters Guide](https://aryapreetam.github.io/storytale/guides/parameters/)
+- [Decorators Guide](https://aryapreetam.github.io/storytale/guides/decorators/)
+- [Multiplatform Workflows](https://aryapreetam.github.io/storytale/guides/multiplatform/)
 
-#### runtime
+---
 
-The runtime module is designed to provide developers with essential APIs during the coding process
+## Building Locally
 
-## Feedback and questions
+```bash
+# Publish artifacts to local Maven repository
+./gradlew publishToMavenLocal
 
-Share your feedback or questions in our [#storytale](https://slack-chats.kotlinlang.org/c/storytale) Slack channel.
-[Get a Slack invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up).
+# Run checks across all modules
+./gradlew check
+```
+
+---
+
+## License & Upstream
+
+Storytale is distributed under the [Apache 2.0 License](LICENSE).  
+Upstream repository: [Kotlin/Storytale](https://github.com/Kotlin/Storytale).

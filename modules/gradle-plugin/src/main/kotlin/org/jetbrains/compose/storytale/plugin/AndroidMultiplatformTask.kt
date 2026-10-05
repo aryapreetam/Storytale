@@ -139,8 +139,8 @@ private fun Project.configureAndroidApplication(
         .configureEach {
             kotlin.srcDir(storytaleBuildSourcesDir)
             extension.setupCommonStoriesSourceSetDependencies(this)
-            mainStoriesSourceSet.kotlin.srcDirs.forEach {
-                kotlin.srcDir(it)
+            dependencies {
+                implementation("androidx.activity:activity-compose:1.10.1")
             }
         }
 
@@ -150,6 +150,7 @@ private fun Project.configureAndroidApplication(
             appIdProvider,
             storytaleBuildSourcesDir,
             storytaleBuildResourcesDir,
+            storiesSourceDirs = mainStoriesSourceSet.kotlin.srcDirs.toList(),
         )
 
         tasks
@@ -174,10 +175,12 @@ private fun Project.configureAndroidApplication(
 
         val installTaskName = "install${variantName.capitalized()}"
         val packageTaskName = "package${variantName.capitalized()}"
+        val buildDir = layout.buildDirectory.asFile.get()
 
         task("${target.name}${StorytaleGradlePlugin.STORYTALE_SOURCESET_SUFFIX}Run") {
             group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
             description = "Run Storytale gallery on Android"
+            notCompatibleWithConfigurationCache("Launches interactive Android application on device or emulator")
 
             dependsOn(startEmulatorTask)
             val installTask = tasks.findByName(installTaskName)
@@ -198,15 +201,15 @@ private fun Project.configureAndroidApplication(
                 }
 
                 if (installTask == null) {
-                    val apkDir = layout.buildDirectory.asFile.get().resolve("outputs/apk/$variantName")
+                    val apkDir = buildDir.resolve("outputs/apk/$variantName")
                     val apkFile = apkDir.walkTopDown().firstOrNull { it.isFile && it.extension == "apk" }
                     if (apkFile != null) {
-                        project.logger.lifecycle("Storytale: Installing APK via $adbPath on ${activeDevice ?: "default"}...")
+                        logger.lifecycle("Storytale: Installing APK via $adbPath on ${activeDevice ?: "default"}...")
                         runProcess(*(adbCmd + listOf("install", "-r", apkFile.absolutePath)).toTypedArray())
                     }
                 }
 
-                project.logger.lifecycle("Storytale: Launching activity $appId/$activityPath via $adbPath (device: ${activeDevice ?: "default"})")
+                logger.lifecycle("Storytale: Launching activity $appId/$activityPath via $adbPath (device: ${activeDevice ?: "default"})")
                 runProcess(*(adbCmd + listOf("shell", "am", "start", "-n", "$appId/$activityPath")).toTypedArray())
             }
         }
@@ -247,8 +250,8 @@ private fun Project.configureAndroidLibrary(
         .configureEach {
             kotlin.srcDir(storytaleBuildSourcesDir)
             extension.setupCommonStoriesSourceSetDependencies(this)
-            mainStoriesSourceSet.kotlin.srcDirs.forEach {
-                kotlin.srcDir(it)
+            dependencies {
+                implementation("androidx.activity:activity-compose:1.10.1")
             }
         }
 
@@ -281,6 +284,7 @@ private fun Project.configureAndroidLibrary(
             storytaleBuildSourcesDir,
             storytaleBuildResourcesDir,
             deviceTestManifestFile = deviceTestManifest,
+            storiesSourceDirs = mainStoriesSourceSet.kotlin.srcDirs.toList(),
         )
 
         tasks
@@ -315,10 +319,12 @@ private fun Project.configureAndroidLibrary(
         val startEmulatorTask = createStartEmulatorTask(target, adbPath)
 
         val runTaskName = "${target.name}${StorytaleGradlePlugin.STORYTALE_SOURCESET_SUFFIX}Run"
+        val buildDir = layout.buildDirectory.asFile.get()
         if (tasks.findByName(runTaskName) == null) {
             task(runTaskName) {
                 group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
                 description = "Run Storytale gallery on Android"
+                notCompatibleWithConfigurationCache("Launches interactive Android application on device or emulator")
 
                 dependsOn(startEmulatorTask)
                 val packageTask = tasks.matching {
@@ -339,19 +345,19 @@ private fun Project.configureAndroidLibrary(
                         listOf(adbPath)
                     }
 
-                    val outputsDir = layout.buildDirectory.asFile.get().resolve("outputs/apk")
+                    val outputsDir = buildDir.resolve("outputs/apk")
                     val apkFile = outputsDir.walkTopDown().firstOrNull {
                         it.isFile && it.extension == "apk" && (it.name.contains("test", ignoreCase = true) || it.name.contains(variantName, ignoreCase = true))
                     } ?: outputsDir.walkTopDown().firstOrNull { it.isFile && it.extension == "apk" }
 
                     if (apkFile != null) {
-                        project.logger.lifecycle("Storytale: Installing APK '${apkFile.name}' via $adbPath on ${activeDevice ?: "default"}...")
+                        logger.lifecycle("Storytale: Installing APK '${apkFile.name}' via $adbPath on ${activeDevice ?: "default"}...")
                         runProcess(*(adbCmd + listOf("install", "-r", apkFile.absolutePath)).toTypedArray())
                     } else {
-                        project.logger.warn("Storytale: No output APK found in $outputsDir")
+                        logger.warn("Storytale: No output APK found in $outputsDir")
                     }
 
-                    project.logger.lifecycle("Storytale: Launching activity $appId/$activityPath via $adbPath (device: ${activeDevice ?: "default"})")
+                    logger.lifecycle("Storytale: Launching activity $appId/$activityPath via $adbPath (device: ${activeDevice ?: "default"})")
                     runProcess(*(adbCmd + listOf("shell", "am", "start", "-n", "$appId/$activityPath")).toTypedArray())
                 }
             }
@@ -365,6 +371,7 @@ private fun Project.createAndroidStorytaleGenerateSourceTask(
     buildSourcesDir: File,
     buildResourcesDir: File,
     deviceTestManifestFile: File? = null,
+    storiesSourceDirs: List<File> = emptyList(),
 ) = task<AndroidSourceGeneratorTask>("${target.name}${StorytaleGradlePlugin.STORYTALE_GENERATE_SUFFIX}") {
     group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
     description = "Generate Android source files for '${target.name}'"
@@ -373,14 +380,17 @@ private fun Project.createAndroidStorytaleGenerateSourceTask(
     outputSourcesDir = buildSourcesDir
     outputResourcesDir = buildResourcesDir
     this.deviceTestManifestFile = deviceTestManifestFile
+    this.storiesSources = storiesSourceDirs
+    dependsOn(tasks.matching { it.name == "generateResourceAccessorsForCommonStories" })
 }
 
 private fun Project.createStartEmulatorTask(target: KotlinTarget, adbPath: String): Task {
     return task("${target.name}${StorytaleGradlePlugin.STORYTALE_SOURCESET_SUFFIX}StartEmulator") {
+        notCompatibleWithConfigurationCache("Detects or launches external Android emulator daemon")
         doLast {
             val activeDevice = AndroidComponentsHelper.resolveActiveDeviceSerial(adbPath)
             if (activeDevice != null) {
-                project.logger.info("Using active Android device: $activeDevice")
+                logger.info("Using active Android device: $activeDevice")
                 runProcess(adbPath, "-s", activeDevice, "wait-for-device")
                 return@doLast
             }
@@ -396,7 +406,7 @@ private fun Project.createStartEmulatorTask(target: KotlinTarget, adbPath: Strin
                 val output = runProcessIgnoreExit(emulatorPath.absolutePath, "-list-avds")
                 val emulatorName = output.trim().lineSequence().lastOrNull { it.isNotBlank() }
                 if (emulatorName != null) {
-                    project.logger.info("Starting emulator: $emulatorName")
+                    logger.info("Starting emulator: $emulatorName")
                     Thread {
                         runProcessIgnoreExit(emulatorPath.absolutePath, "-avd", emulatorName, "-no-snapshot-load")
                     }.start()
@@ -411,7 +421,7 @@ private fun Project.createStartEmulatorTask(target: KotlinTarget, adbPath: Strin
                 }
             }
 
-            project.logger.warn("No active Android device detected and no local AVD could be launched.")
+            logger.warn("No active Android device detected and no local AVD could be launched.")
         }
     }
 }

@@ -23,9 +23,9 @@ cp -r modules/runtime-api/build/dokka/html/* site/api/
 
 # 3. Build Canonical Wasm Showcase Gallery
 echo "==> 3/3: Building Canonical Wasm Showcase Gallery..."
-"${PROJECT_ROOT}/gradlew" -PcmpProfile=1.12 :gallery-demo:wasmJsBrowserStoriesProductionExecutableDistribution
+"${PROJECT_ROOT}/gradlew" -PcmpProfile=1.12 :gallery-demo:composeApp:wasmJsBrowserStoriesProductionExecutableDistribution
 "${PROJECT_ROOT}/gradlew" --stop
-cp -r gallery-demo/build/dist/wasmJs/StoriesProductionExecutable/* site/gallery/
+cp -r gallery-demo/composeApp/build/dist/wasmJs/StoriesProductionExecutable/* site/gallery/
 
 echo "============================================================="
 echo " Documentation build complete!"

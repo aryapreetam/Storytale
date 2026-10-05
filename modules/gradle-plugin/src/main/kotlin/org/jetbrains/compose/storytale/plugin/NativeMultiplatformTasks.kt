@@ -104,8 +104,11 @@ private fun Project.createNativeStorytaleExecTask(
     val copyResourcesTask = createCopyNativeResourcesTask(platform, target, targetSuffix, compilation, unzipXCodeProjectTask, buildTask)
     val installAppTask = createInstallApplicationToSimulatorTask(deviceId, targetSuffix, platform, unzipXCodeProjectTask, buildTask, copyResourcesTask)
 
+    val xcodeWorkingDir = unzipXCodeProjectTask.outputDir
+
     return task("${target.name}${StorytaleGradlePlugin.STORYTALE_SOURCESET_SUFFIX}Run") {
         group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
+        notCompatibleWithConfigurationCache("Launches interactive iOS simulator application")
         dependsOn(unzipXCodeProjectTask)
         dependsOn(installAppTask)
 
@@ -118,7 +121,7 @@ private fun Project.createNativeStorytaleExecTask(
                 "launch",
                 deviceId.get(),
                 StorytaleGradlePlugin.STORYTALE_NATIVE_PROJECT_PATH,
-                workingDir = unzipXCodeProjectTask.outputDir.get().asFile,
+                workingDir = xcodeWorkingDir.get().asFile,
             )
             runProcess("/usr/bin/open", "-a", "Simulator")
         }
@@ -142,6 +145,7 @@ private fun Project.createUnzipResourceTask(extension: StorytaleExtension): Unzi
 private fun Project.createSimulatorRegistrationTask(unzipResourceTask: UnzipResourceTask, targetSuffix: String, deviceIdProperty: Property<String>): Task {
     return task("${StorytaleGradlePlugin.STORYTALE_TASK_GROUP}Register$targetSuffix") {
         group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
+        notCompatibleWithConfigurationCache("Queries and boots iOS simulator")
         dependsOn(unzipResourceTask)
 
         doLast {
@@ -149,7 +153,7 @@ private fun Project.createSimulatorRegistrationTask(unzipResourceTask: UnzipReso
             val activeSdkVersion = IosSimulatorResolver.getActiveIosSdkVersion()
             val selectedDevice = IosSimulatorResolver.selectBestDevice(availableDevices, activeSdkVersion)
 
-            project.logger.info("Using iOS simulator: ${selectedDevice.name} (${selectedDevice.udid}) [runtime: ${selectedDevice.runtimeName}, booted: ${selectedDevice.isBooted}]")
+            logger.info("Using iOS simulator: ${selectedDevice.name} (${selectedDevice.udid}) [runtime: ${selectedDevice.runtimeName}, booted: ${selectedDevice.isBooted}]")
 
             if (!selectedDevice.isBooted) {
                 runProcess("/usr/bin/xcrun", "simctl", "boot", selectedDevice.udid)
@@ -250,21 +254,26 @@ private fun Project.createBuildTask(
     linkTask: KotlinNativeLink,
     target: KotlinNativeTarget,
 ): Task {
+    val arch = if (target.konanTarget === KonanTarget.IOS_SIMULATOR_ARM64) "arm64" else "x86_64"
+    val xcodeWorkingDir = unzipResourceTask.outputDir
+    val frameworkDestinationDir = linkTask.destinationDirectory
+    val linkOutputs = linkTask.outputs.files
+
     return task("${StorytaleGradlePlugin.STORYTALE_TASK_GROUP}Build$targetSuffix") {
         group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
+        notCompatibleWithConfigurationCache("Executes xcodebuild for native simulator target")
         dependsOn(unzipResourceTask)
         dependsOn(simulatorRegistrationTask)
         dependsOn(linkTask)
 
         inputs.property("deviceId", deviceId)
 
-        val xcodeProjectPath = unzipResourceTask.outputDir.get().asFile
-        inputs.files(linkTask.outputs.files)
+        val xcodeProjectPath = xcodeWorkingDir.get().asFile
+        inputs.files(linkOutputs)
         outputs.dir(xcodeProjectPath.resolve(StorytaleGradlePlugin.DERIVED_DATA_DIRECTORY_NAME))
 
         doLast {
-            val frameworkPath = linkTask.destinationDirectory.asFile.get().path
-            val arch = if (target.konanTarget === KonanTarget.IOS_SIMULATOR_ARM64) "arm64" else "x86_64"
+            val frameworkPath = frameworkDestinationDir.asFile.get().path
             runProcess(
                 "/usr/bin/xcodebuild",
                 "clean",
@@ -325,8 +334,11 @@ private fun Project.createInstallApplicationToSimulatorTask(
     buildTask: Task,
     copyResourcesTask: Task,
 ): Task {
+    val xcodeWorkingDir = unzipResourceTask.outputDir
+
     return task("${StorytaleGradlePlugin.STORYTALE_TASK_GROUP}InstallApp$targetSuffix") {
         group = StorytaleGradlePlugin.STORYTALE_TASK_GROUP
+        notCompatibleWithConfigurationCache("Installs native app bundle into iOS simulator")
         dependsOn(unzipResourceTask)
         dependsOn(buildTask)
         dependsOn(copyResourcesTask)
@@ -341,7 +353,7 @@ private fun Project.createInstallApplicationToSimulatorTask(
                 "install",
                 deviceId.get(),
                 appPath,
-                workingDir = unzipResourceTask.outputDir.get().asFile,
+                workingDir = xcodeWorkingDir.get().asFile,
             )
         }
     }

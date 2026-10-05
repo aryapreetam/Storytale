@@ -86,6 +86,18 @@ gradle.projectsEvaluated {
         dependsOn(gradle.includedBuild("gradle-plugin").task(":publishToMavenCentral"))
     }
 
+    tasks.register("publishAndReleaseToMavenCentral") {
+        group = "publishing"
+        description = "Publish and automatically release all subprojects and included gradle-plugin to Maven Central"
+
+        subprojects.forEach { subproject ->
+            if (subproject.plugins.hasPlugin("com.vanniktech.maven.publish")) {
+                dependsOn(subproject.tasks.matching { it.name == "publishAndReleaseToMavenCentral" })
+            }
+        }
+        dependsOn(gradle.includedBuild("gradle-plugin").task(":publishAndReleaseToMavenCentral"))
+    }
+
     tasks.register("publishToMavenLocal") {
         group = "publishing"
         description = "Publish all subprojects and included gradle-plugin to Maven Local"

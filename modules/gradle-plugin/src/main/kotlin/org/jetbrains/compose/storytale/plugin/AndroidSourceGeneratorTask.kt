@@ -8,9 +8,12 @@ import java.nio.file.Files
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
@@ -31,6 +34,11 @@ open class AndroidSourceGeneratorTask : DefaultTask() {
     @get:Optional
     var deviceTestManifestFile: File? = null
 
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:Optional
+    var storiesSources: List<File>? = null
+
     @TaskAction
     fun generate() {
         cleanup(outputSourcesDir)
@@ -38,6 +46,15 @@ open class AndroidSourceGeneratorTask : DefaultTask() {
 
         generateSources()
         generateAndroidManifest()
+        copyStoriesSources()
+    }
+
+    private fun copyStoriesSources() {
+        storiesSources?.forEach { srcDir ->
+            if (srcDir.exists()) {
+                srcDir.copyRecursively(outputSourcesDir, overwrite = true)
+            }
+        }
     }
 
     private fun generateSources() {

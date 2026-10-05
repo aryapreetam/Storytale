@@ -22,14 +22,14 @@ import androidx.compose.material3.lightColorScheme
 import org.jetbrains.compose.storytale.story
 
 val `Themed Card` by story(group = "Surfaces") {
-    val isDark by parameter(false)
-    val colorScheme = if (isDark) darkColorScheme() else lightColorScheme()
+  val isDark by parameter(false)
+  val colorScheme = if (isDark) darkColorScheme() else lightColorScheme()
 
-    MaterialTheme(colorScheme = colorScheme) {
-        Surface {
-            CustomCard(title = "Design Token Card")
-        }
+  MaterialTheme(colorScheme = colorScheme) {
+    Surface {
+      CustomCard(title = "Design Token Card")
     }
+  }
 }
 ```
 
@@ -37,15 +37,17 @@ val `Themed Card` by story(group = "Surfaces") {
 
 ## 2. Reusable Story Wrappers (Story Decorators)
 
-To avoid repeating theme setup, background containers, and padding in every story, create reusable wrapper functions:
+To avoid repeating theme setup, background containers, and padding in every story, create reusable extension functions on `Story`:
 
 ```kotlin
-package com.example.ui.stories
+package org.storytale.sample
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,33 +60,33 @@ import org.jetbrains.compose.storytale.Story
  */
 @Composable
 fun Story.PreviewDecorator(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit
 ) {
-    val isDarkMode by parameter(false)
-    val themeColorScheme = if (isDarkMode) darkColorScheme() else lightColorScheme()
+  val isDarkMode by parameter(false)
+  val themeColorScheme = if (isDarkMode) darkColorScheme() else lightColorScheme()
 
-    MaterialTheme(colorScheme = themeColorScheme) {
-        Surface(modifier = modifier) {
-            Box(
-                modifier = Modifier.padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                content()
-            }
-        }
+  MaterialTheme(colorScheme = themeColorScheme) {
+    Surface(modifier = modifier) {
+      Box(
+        modifier = Modifier.padding(24.dp),
+        contentAlignment = Alignment.Center
+      ) {
+        content()
+      }
     }
+  }
 }
 ```
 
-Then use the decorator cleanly inside your stories:
+Then use the decorator inside your stories:
 
 ```kotlin
 val `Search Bar Component` by story(group = "Navigation") {
-    PreviewDecorator {
-        val query by parameter("Search components...")
-        SearchBar(query = query, onQueryChange = {})
-    }
+  PreviewDecorator {
+    val query by parameter("Search components...")
+    SearchBar(query = query, onQueryChange = {})
+  }
 }
 ```
 
@@ -92,16 +94,16 @@ val `Search Bar Component` by story(group = "Navigation") {
 
 ## 3. Providing Composition Locals
 
-Components that rely on navigation hosts, image loaders, localization, or accessibility providers can be wrapped seamlessly:
+Components that rely on navigation hosts, image loaders, localization, or accessibility providers can be wrapped using `CompositionLocalProvider`:
 
 ```kotlin
 val `Profile Avatar with Coil` by story(group = "Media") {
-    CompositionLocalProvider(
-        LocalAppConfig provides testAppConfig,
-        LocalDensity provides Density(density = 2.0f)
-    ) {
-        Avatar(url = "https://example.com/avatar.png")
-    }
+  CompositionLocalProvider(
+    LocalAppConfig provides testAppConfig,
+    LocalDensity provides Density(density = 2.0f)
+  ) {
+    Avatar(url = "https://example.com/avatar.png")
+  }
 }
 ```
 
@@ -109,13 +111,13 @@ val `Profile Avatar with Coil` by story(group = "Media") {
 
 ## 4. Desktop Custom Themes (e.g. IntelliJ Jewel)
 
-For Desktop-specific tools, Storytale seamlessly integrates with specialized desktop themes such as [Jewel](https://github.com/JetBrains/jewel) (IntelliJ Platform styling):
+For Desktop-specific tools, Storytale integrates with specialized desktop themes such as [Jewel](https://github.com/JetBrains/jewel) (IntelliJ Platform styling):
 
 ```kotlin
 val `Jewel IDE Tree` by story(group = "IDE Components") {
-    IntelliJTheme(dark = false) {
-        Tree(nodes = sampleProjectTree)
-    }
+  IntelliJTheme(dark = false) {
+    Tree(nodes = sampleProjectTree)
+  }
 }
 ```
 

@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinJvm
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -8,9 +9,20 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.mavenPublish)
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
 dependencies {
     compileOnly(compose.runtime)
-    implementation(kotlin("compiler-embeddable"))
+    compileOnly(kotlin("compiler-embeddable"))
+    testImplementation(kotlin("compiler-embeddable"))
     testImplementation(compose.foundation)
     testImplementation(compose.material3)
     testImplementation(compose.runtime)

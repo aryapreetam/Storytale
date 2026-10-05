@@ -73,7 +73,7 @@ private class AddCodeSnippetToStoriesLowering(context: IrPluginContext) : BodyLo
         }
 
         private fun IrDeclaration.getFileSourceCode(): CharSequence? {
-            return (file.metadata as FirMetadataSource).fir.source.text
+            return (file.metadata as? FirMetadataSource)?.fir?.source?.text
         }
     }
 }
@@ -150,7 +150,32 @@ private class MentionAllStoriesGettersInsideMainFunctionLowering(
             0,
             0,
         )
-        context.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(this, annotation)
+        val registrar = context.metadataDeclarationRegistrar
+        try {
+            val methodWithList = registrar.javaClass.methods.firstOrNull {
+                it.name == "addMetadataVisibleAnnotationsToElement" &&
+                    it.parameterTypes.size == 2 &&
+                    java.util.List::class.java.isAssignableFrom(it.parameterTypes[1])
+            }
+            if (methodWithList != null) {
+                methodWithList.invoke(registrar, this, listOf(annotation))
+                return
+            }
+            val methodWithArray = registrar.javaClass.methods.firstOrNull {
+                it.name == "addMetadataVisibleAnnotationsToElement" &&
+                    it.parameterTypes.size == 2 &&
+                    it.parameterTypes[1].isArray
+            }
+            if (methodWithArray != null) {
+                val arrayType = methodWithArray.parameterTypes[1].componentType
+                val array = java.lang.reflect.Array.newInstance(arrayType, 1)
+                java.lang.reflect.Array.set(array, 0, annotation)
+                methodWithArray.invoke(registrar, this, array)
+                return
+            }
+        } catch (_: Throwable) {
+            // Ignore if metadata registrar method is not available on this platform/compiler version
+        }
     }
 
     private class IrObservableBlockImpl(

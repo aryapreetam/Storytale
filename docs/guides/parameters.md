@@ -18,23 +18,23 @@ import androidx.compose.material3.Text
 import org.jetbrains.compose.storytale.story
 
 val `Interactive Button` by story(group = "Controls/Buttons") {
-    val text by parameter("Click Me")
-    val isEnabled by parameter(true)
+  val text by parameter("Click Me")
+  val isEnabled by parameter(true)
 
-    Button(
-        onClick = {},
-        enabled = isEnabled
-    ) {
-        Text(text)
-    }
+  Button(
+    onClick = {},
+    enabled = isEnabled
+  ) {
+    Text(text)
+  }
 }
 ```
 
-When you select this story in the Storytale gallery, the right sidebar automatically generates:
+When you select this story in the Storytale gallery, the sidebar automatically generates:
 - A text input field for `text`.
 - A toggle switch for `isEnabled`.
 
-Editing these controls updates the composable state instantaneously without recompilation.
+Editing these controls updates the composable state immediately without recompilation.
 
 ---
 
@@ -60,9 +60,9 @@ To restrict an input to a predefined list of allowed values, supply a `List<T>`:
 
 ```kotlin
 val variant by parameter(
-    values = listOf("Filled", "Outlined", "Elevated", "Tonal"),
-    defaultValueIndex = 0,
-    label = "Button Style"
+  values = listOf("Filled", "Outlined", "Elevated", "Tonal"),
+  defaultValueIndex = 0,
+  label = "Button Style"
 )
 ```
 
@@ -75,8 +75,8 @@ Enums are automatically converted to discrete options using Kotlin's `enumEntrie
 enum class BadgePriority { Low, Medium, High, Critical }
 
 val priority by parameter(
-    defaultValue = BadgePriority.Medium,
-    label = "Badge Severity"
+  defaultValue = BadgePriority.Medium,
+  label = "Badge Severity"
 )
 ```
 
@@ -84,7 +84,7 @@ val priority by parameter(
 
 ## 3. Using `@Preview` with `previewParameter`
 
-If you are developing components using standard `@Preview` annotations (from Jetpack Compose or Compose Multiplatform), Storytale's compiler plugin can automatically convert previews into interactive stories.
+If you develop components using standard `@Preview` annotations (from Jetpack Compose or Compose Multiplatform), Storytale's compiler plugin can automatically convert previews into interactive stories.
 
 Inside any `@Preview` composable, use `previewParameter`:
 
@@ -98,16 +98,16 @@ import org.jetbrains.compose.storytale.previewParameter
 @Preview
 @Composable
 fun PreviewActionButton() {
-    val title by previewParameter("Submit Order")
-    val enabled by previewParameter(true)
+  val title by previewParameter("Submit Order")
+  val enabled by previewParameter(true)
 
-    Button(onClick = {}, enabled = enabled) {
-        Text(title)
-    }
+  Button(onClick = {}, enabled = enabled) {
+    Text(title)
+  }
 }
 ```
 
-Under the hood, `previewParameter` accesses the active `LocalStory` composition local provided by Storytale's gallery host, falling back safely to default values when rendered in IDE preview tooling.
+`previewParameter` accesses the active `LocalStory` composition local provided by Storytale's gallery host, falling back safely to default values when rendered in standard IDE preview tooling.
 
 ---
 
@@ -128,7 +128,7 @@ sequenceDiagram
     Composable-->>Developer: Re-renders updated UI instantly
 ```
 
-Because controls bind directly to Compose snapshot state, parameter changes are surgical and only recompose the specific nodes reading the parameter.
+Because controls bind directly to Compose snapshot state, parameter changes only recompose the specific nodes reading the parameter.
 
 ---
 

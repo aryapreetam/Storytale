@@ -22,13 +22,13 @@ Add the Storytale Gradle plugin to your project:
     storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }
     ```
 
-    Apply it in your module's `build.gradle.kts`:
+    Apply it in your shared UI module's `build.gradle.kts` (e.g. `composeApp` or `shared`):
 
     ```kotlin
     plugins {
-        alias(libs.plugins.kotlinMultiplatform)
-        alias(libs.plugins.composeMultiplatform)
-        alias(libs.plugins.storytale)
+      alias(libs.plugins.kotlinMultiplatform)
+      alias(libs.plugins.composeMultiplatform)
+      alias(libs.plugins.storytale)
     }
     ```
 
@@ -36,7 +36,7 @@ Add the Storytale Gradle plugin to your project:
 
     ```kotlin
     plugins {
-        id("io.github.aryapreetam.storytale") version "0.0.6"
+      id("io.github.aryapreetam.storytale") version "0.0.6"
     }
     ```
 
@@ -48,17 +48,18 @@ Ensure `mavenCentral()` is declared in your `settings.gradle.kts`:
 
 ```kotlin
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
+  repositories {
+    gradlePluginPortal()
+    mavenCentral()
+    google()
+  }
 }
 
 dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-        google()
-    }
+  repositories {
+    mavenCentral()
+    google()
+  }
 }
 ```
 
@@ -66,21 +67,22 @@ dependencyResolutionManagement {
 
 ## 3. Platform Compatibility
 
-Storytale `0.0.6` is compiled and verified against:
+Storytale `0.0.6` is compiled and verified against the following toolchains:
 
-| Component | Minimum Supported Version | Recommended Version |
-| :--- | :--- | :--- |
-| **Kotlin** | 2.1.0 | 2.2.0 |
-| **Compose Multiplatform** | 1.7.0 | 1.8.0+ / 1.10.1 |
-| **Gradle** | 8.5 | 8.10+ |
-| **Android Min SDK** | 26 (30 for backticks with spaces) | 30+ |
-| **JDK Host** | 17 | 21+ |
+| Component | Minimum Supported | Recommended | Notes |
+| :--- | :--- | :--- | :--- |
+| **Kotlin** | `2.3.0` | `2.3.20` | Required for FIR K2 compiler plugin ABI compatibility. |
+| **Compose Multiplatform** | `1.8.0` | `1.10.1` / `1.12.x` | Verified with dynamic Compose Multiplatform profiles. |
+| **Android Gradle Plugin (AGP)** | `8.8.0` | `9.1.0` | Supports both `com.android.library` and `com.android.kotlin.multiplatform.library`. |
+| **Gradle** | `8.10` | `9.3.1` | Compatible with Gradle 9 lifecycle and process execution APIs. |
+| **Android Min SDK** | `24` | `30+` | API 30+ is required if using spaces in story identifiers (D8 DEX 040 format). |
+| **JDK Host** | `17` | `21` | Required for Kotlin compiler execution and Gradle daemons. |
 
-> [!NOTE]
-> When defining story identifiers with spaces (for example `val \`My Button Story\` by story`), set Android `minSdk = 30` or higher to satisfy Android D8 DEX format 040 requirements.
+!!! note "Story Identifiers & Android DEX 040"
+    When defining story identifiers with spaces (e.g. `val \`Confirm Dialog Box\` by story`), Kotlin emits synthetic delegate fields containing spaces. Android D8 DEX format 040 (introduced in API level 30) natively supports arbitrary UTF-8 identifiers. If your app targets `minSdk < 30`, use identifiers without spaces (e.g. `val ConfirmDialogBox by story`) or set `minSdk = 30` in your test/story module.
 
 ---
 
 ## Next Step
 
-Proceed to **[Writing Your First Story](first-story.md)**.
+Proceed to **[Writing Your First Story](first-story.md)** to configure your first component story using a project generated from [kmp.new](https://kmp.new).

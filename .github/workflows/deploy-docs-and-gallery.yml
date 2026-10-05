@@ -71,9 +71,9 @@ jobs:
 
       - name: Build Canonical Wasm Gallery
         run: |
-          ./gradlew :gallery-demo:wasmJsBrowserStoriesProductionExecutableDistribution --no-daemon
+          ./gradlew -PcmpProfile=1.12 :gallery-demo:composeApp:wasmJsBrowserStoriesProductionExecutableDistribution --no-daemon
           mkdir -p site/gallery
-          cp -r gallery-demo/build/dist/wasmJs/StoriesProductionExecutable/* site/gallery/
+          cp -r gallery-demo/composeApp/build/dist/wasmJs/StoriesProductionExecutable/* site/gallery/
 
       - name: Fix Permissions
         run: |
