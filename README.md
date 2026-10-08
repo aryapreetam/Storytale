@@ -4,7 +4,7 @@
 
 Component-driven UI development and story gallery for Compose Multiplatform.
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.aryapreetam.storytale/gradle-plugin?label=Maven%20Central&color=6366F1)](https://search.maven.org/artifact/io.github.aryapreetam.storytale/gradle-plugin/0.0.6/jar)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.aryapreetam.storytale/gradle-plugin?label=Maven%20Central&color=6366F1)](https://search.maven.org/artifact/io.github.aryapreetam.storytale/gradle-plugin/0.0.7/jar)
 [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin%20Multiplatform-2.3+-7F52FF?logo=kotlin&logoColor=white)](https://github.com/aryapreetam/storytale)
 [![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.10+-4285F4?logo=jetpackcompose&logoColor=white)](https://www.jetbrains.com/lp/compose-multiplatform/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -30,7 +30,7 @@ Storytale is published to **Maven Central** and the **Gradle Plugin Portal**.
 
 ```toml
 [versions]
-storytale = "0.0.6"
+storytale = "0.0.7"
 
 [plugins]
 storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }

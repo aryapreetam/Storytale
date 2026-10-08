@@ -16,7 +16,7 @@ Add the Storytale Gradle plugin to your project:
 
     ```toml
     [versions]
-    storytale = "0.0.6"
+    storytale = "0.0.7"
 
     [plugins]
     storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }
@@ -36,7 +36,7 @@ Add the Storytale Gradle plugin to your project:
 
     ```kotlin
     plugins {
-      id("io.github.aryapreetam.storytale") version "0.0.6"
+      id("io.github.aryapreetam.storytale") version "0.0.7"
     }
     ```
 
@@ -67,7 +67,7 @@ dependencyResolutionManagement {
 
 ## 3. Platform Compatibility
 
-Storytale `0.0.6` is compiled and verified against the following toolchains:
+Storytale `0.0.7` is compiled and verified against the following toolchains:
 
 | Component | Minimum Supported | Recommended | Notes |
 | :--- | :--- | :--- | :--- |

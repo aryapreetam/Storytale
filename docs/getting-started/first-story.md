@@ -56,7 +56,7 @@ Open `shared/build.gradle.kts` and apply the Storytale plugin:
 
     ```toml
     [versions]
-    storytale = "0.0.6"
+    storytale = "0.0.7"
 
     [plugins]
     storytale = { id = "io.github.aryapreetam.storytale", version.ref = "storytale" }
@@ -70,7 +70,7 @@ Open `shared/build.gradle.kts` and apply the Storytale plugin:
       alias(libs.plugins.androidMultiplatformLibrary)
       alias(libs.plugins.composeMultiplatform)
       alias(libs.plugins.composeCompiler)
-      id("io.github.aryapreetam.storytale") version "0.0.6" // (1)
+      id("io.github.aryapreetam.storytale") version "0.0.7" // (1)
     }
     ```
 
@@ -189,8 +189,8 @@ Run the interactive gallery on any platform target from the Gradle tool window o
 
     <div class="wasm-gallery-wrapper" data-gallery-url="https://aryapreetam.github.io/storytale-sample/">
       <div class="storytale-gallery-fallback">
-        <img class="only-light" src="../../assets/wasm-stories-gallery-light.webp" alt="Storytale Wasm Gallery Preview" />
-        <img class="only-dark" src="../../assets/wasm-stories-gallery-dark.webp" alt="Storytale Wasm Gallery Preview" />
+        <img class="only-light" src="../../assets/wasm-stories-gallery-light.webp#only-light" alt="Storytale Wasm Gallery Preview" />
+        <img class="only-dark" src="../../assets/wasm-stories-gallery-dark.webp#only-dark" alt="Storytale Wasm Gallery Preview" />
       </div>
       <div class="storytale-gallery-container" style="display: none;">
         <div class="storytale-gallery-header">
@@ -202,7 +202,7 @@ Run the interactive gallery on any platform target from the Gradle tool window o
           <span>Storytale Sample &mdash; Web (Wasm)</span>
           <a class="storytale-gallery-link" href="https://aryapreetam.github.io/storytale-sample/" target="_blank" rel="noopener" style="font-size: 0.8rem;">Open Fullscreen &nearr;</a>
         </div>
-        <iframe class="storytale-gallery-iframe" data-src="https://aryapreetam.github.io/storytale-sample/" title="Storytale Sample Wasm Gallery"></iframe>
+        <iframe class="storytale-gallery-iframe" data-src="https://aryapreetam.github.io/storytale-sample/" title="Storytale Sample Wasm Gallery" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
       </div>
     </div>
 

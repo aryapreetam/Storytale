@@ -20,3 +20,4 @@ captures
 docs-to-ignore/*
 site/
 **/src/androidDeviceTest/AndroidManifest.xml
+AGENTS.md
