@@ -33,6 +33,17 @@ val `Themed Card` by story(group = "Surfaces") {
 }
 ```
 
+<div class="theme-comparison-row">
+  <figure>
+    <img src="../../assets/jvm-stories-gallery-light.webp" alt="Decorated Story in Light Theme" />
+    <figcaption>Light Theme Palette</figcaption>
+  </figure>
+  <figure>
+    <img src="../../assets/jvm-stories-gallery-dark.webp" alt="Decorated Story in Dark Theme" />
+    <figcaption>Dark Theme Palette</figcaption>
+  </figure>
+</div>
+
 ---
 
 ## 2. Reusable Story Wrappers (Story Decorators)

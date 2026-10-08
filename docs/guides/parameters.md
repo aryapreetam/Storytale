@@ -36,6 +36,27 @@ When you select this story in the Storytale gallery, the sidebar automatically g
 
 Editing these controls updates the composable state immediately without recompilation.
 
+<div class="mobile-gallery-row only-light">
+  <figure>
+    <img src="../../assets/android-stories-config-light.webp" alt="Android Parameters Sidebar" />
+    <figcaption>Android Parameter Controls</figcaption>
+  </figure>
+  <figure>
+    <img src="../../assets/ios-stories-config-light.webp" alt="iOS Parameters Sidebar" />
+    <figcaption>iOS Parameter Controls</figcaption>
+  </figure>
+</div>
+<div class="mobile-gallery-row only-dark">
+  <figure>
+    <img src="../../assets/android-stories-config-dark.webp" alt="Android Parameters Sidebar" />
+    <figcaption>Android Parameter Controls</figcaption>
+  </figure>
+  <figure>
+    <img src="../../assets/ios-stories-config-dark.webp" alt="iOS Parameters Sidebar" />
+    <figcaption>iOS Parameter Controls</figcaption>
+  </figure>
+</div>
+
 ---
 
 ## 2. Parameter Types
@@ -66,7 +87,13 @@ val variant by parameter(
 )
 ```
 
-This renders a dropdown/segmented selection control in the gallery sidebar.
+This renders selection chips in the gallery sidebar:
+
+<figure style="width: 90%; margin: 1em auto;">
+  <img class="only-light" src="../../assets/list-param-demo-light.webp#only-light" alt="Discrete List Parameter Controls" style="width: 100%;" />
+  <img class="only-dark" src="../../assets/list-param-demo-dark.webp#only-dark" alt="Discrete List Parameter Controls" style="width: 100%;" />
+  <figcaption>Selection chips generated automatically for <code>List&lt;T&gt;</code> parameters</figcaption>
+</figure> 
 
 ### Enum Types
 Enums are automatically converted to discrete options using Kotlin's `enumEntries`:
@@ -79,6 +106,12 @@ val priority by parameter(
   label = "Badge Severity"
 )
 ```
+
+<figure>
+  <img class="only-light" src="../../assets/param-enum-light.webp#only-light" alt="Enum Parameter Controls" />
+  <img class="only-dark" src="../../assets/param-enum-dark.webp#only-dark" alt="Enum Parameter Controls" />
+  <figcaption>Selection chips generated automatically from Kotlin enum types</figcaption>
+</figure>
 
 ---
 

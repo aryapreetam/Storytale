@@ -97,20 +97,75 @@ function initGalleryFallbacks() {
   });
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initGalleryFallbacks);
-} else {
+function syncTabbedSets() {
+  var tabSets = document.querySelectorAll(".tabbed-set");
+  tabSets.forEach(function (tabSet) {
+    var inputs = tabSet.querySelectorAll(":scope > input[type='radio']");
+    var content = tabSet.querySelector(":scope > .tabbed-content");
+    if (!content) return;
+    var blocks = content.querySelectorAll(":scope > .tabbed-block");
+    if (inputs.length === 0 || blocks.length === 0) return;
+
+    var activeIndex = -1;
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].checked) {
+        activeIndex = i;
+        break;
+      }
+    }
+    if (activeIndex === -1) activeIndex = 0;
+
+    for (var j = 0; j < blocks.length; j++) {
+      if (j === activeIndex) {
+        blocks[j].style.setProperty("display", "block", "important");
+      } else {
+        blocks[j].style.setProperty("display", "none", "important");
+      }
+    }
+
+    var labelsContainer = tabSet.querySelector(":scope > .tabbed-labels");
+    if (labelsContainer) {
+      var labels = labelsContainer.children;
+      for (var k = 0; k < labels.length; k++) {
+        if (k === activeIndex) {
+          labels[k].style.setProperty("border-color", "var(--md-accent-fg-color)", "important");
+          labels[k].style.setProperty("color", "var(--md-accent-fg-color)", "important");
+        } else {
+          labels[k].style.removeProperty("border-color");
+          labels[k].style.removeProperty("color");
+        }
+      }
+    }
+  });
+}
+
+function runTabAndFallbackInit() {
+  syncTabbedSets();
   initGalleryFallbacks();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", runTabAndFallbackInit);
+} else {
+  runTabAndFallbackInit();
 }
 
 if (typeof document$ !== "undefined") {
   document$.subscribe(function () {
-    initGalleryFallbacks();
+    runTabAndFallbackInit();
   });
 }
 
 document.addEventListener("change", function (e) {
   if (e.target && e.target.matches && e.target.matches(".tabbed-set input")) {
+    syncTabbedSets();
     initGalleryFallbacks();
   }
 });
+
+document.addEventListener("click", function (e) {
+  if (e.target && e.target.closest && e.target.closest(".tabbed-labels label")) {
+    setTimeout(syncTabbedSets, 0);
+  }
+});
+

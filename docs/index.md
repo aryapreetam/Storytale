@@ -10,7 +10,7 @@ title: Storytale — Component Gallery for Compose Multiplatform
 <p align="center">Component-driven UI development and story gallery for Compose Multiplatform</p>
 
 <p align="center">
-  <a href="https://search.maven.org/artifact/io.github.aryapreetam.storytale/gradle-plugin/0.0.6/jar"><img src="https://img.shields.io/maven-central/v/io.github.aryapreetam.storytale/gradle-plugin?label=Maven%20Central&color=6366F1" alt="Maven Central" /></a>
+  <a href="https://search.maven.org/artifact/io.github.aryapreetam.storytale/gradle-plugin/0.0.7/jar"><img src="https://img.shields.io/maven-central/v/io.github.aryapreetam.storytale/gradle-plugin?label=Maven%20Central&color=6366F1" alt="Maven Central" /></a>
   <a href="https://github.com/aryapreetam/storytale/actions"><img src="https://img.shields.io/badge/Kotlin%20Multiplatform-2.3+-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Multiplatform" /></a>
   <a href="https://www.jetbrains.com/lp/compose-multiplatform/"><img src="https://img.shields.io/badge/Compose%20Multiplatform-1.10+-4285F4?logo=jetpackcompose&logoColor=white" alt="Compose Multiplatform" /></a>
   <a href="https://github.com/aryapreetam/storytale/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
@@ -45,7 +45,7 @@ In your shared UI module (e.g. `:shared` OR `:app:shared` OR `:composeApp`) `bui
 
 ```kotlin
 plugins {
-  id("io.github.aryapreetam.storytale") version "0.0.6"
+  id("io.github.aryapreetam.storytale") version "0.0.7"
 }
 ```
 
@@ -109,17 +109,23 @@ Run the gallery on Desktop, Web, Android, or iOS:
 
 The gallery running in the browser, built with Compose Multiplatform for WebAssembly (`wasmJs`):
 
-<div class="storytale-gallery-container">
-  <div class="storytale-gallery-header">
-    <div class="dots">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
-    <span>Storytale Wasm Gallery</span>
-    <a href="gallery/" target="_blank" style="font-size: 0.8rem; text-decoration: none;">Open Fullscreen ↗</a>
+<div class="wasm-gallery-wrapper" data-gallery-url="https://aryapreetam.github.io/storytale/gallery/">
+  <div class="storytale-gallery-fallback">
+    <img class="only-light" src="assets/wasm-stories-gallery-light.webp#only-light" alt="Storytale Wasm Gallery Preview" />
+    <img class="only-dark" src="assets/wasm-stories-gallery-dark.webp#only-dark" alt="Storytale Wasm Gallery Preview" />
   </div>
-  <iframe class="storytale-gallery-iframe" src="gallery/index.html" loading="lazy"></iframe>
+  <div class="storytale-gallery-container" style="display: none;">
+    <div class="storytale-gallery-header">
+      <div class="dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <span>Storytale Wasm Gallery</span>
+      <a class="storytale-gallery-link" href="https://aryapreetam.github.io/storytale/gallery/" target="_blank" rel="noopener" style="font-size: 0.8rem; text-decoration: none;">Open Fullscreen &nearr;</a>
+    </div>
+    <iframe class="storytale-gallery-iframe" data-src="https://aryapreetam.github.io/storytale/gallery/" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" title="Storytale Wasm Gallery"></iframe>
+  </div>
 </div>
 
 ---

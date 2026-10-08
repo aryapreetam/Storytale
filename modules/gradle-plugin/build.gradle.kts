@@ -45,9 +45,9 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.android.gradle.plugin)
-    implementation(libs.compose.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
+    compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.compose.gradle.plugin)
     implementation(libs.kotlin.poet)
 }
 

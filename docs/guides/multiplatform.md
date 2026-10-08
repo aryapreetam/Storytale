@@ -16,6 +16,11 @@ The Desktop runner launches a native desktop window directly from Gradle.
 ./gradlew :composeApp:desktopStoriesRun
 ```
 
+<p align="center">
+  <img class="only-light" alt="Storytale Desktop Gallery" src="../../assets/jvm-stories-gallery-light.webp#only-light" />
+  <img class="only-dark" alt="Storytale Desktop Gallery" src="../../assets/jvm-stories-gallery-dark.webp#only-dark" />
+</p>
+
 ### Highlights
 - Runs directly from Gradle without creating intermediate emulator devices.
 - Supports macOS, Linux, and Windows hosts.
@@ -26,6 +31,11 @@ The Desktop runner launches a native desktop window directly from Gradle.
 ## 2. Web (WebAssembly / Wasm)
 
 Storytale compiles directly to WebAssembly (`wasmJs`), allowing you to publish interactive storybook galleries to any static website, CDN, or GitHub Pages.
+
+<p align="center">
+  <img class="only-light" alt="Storytale Web Wasm Gallery" src="../../assets/wasm-stories-gallery-light.webp#only-light" />
+  <img class="only-dark" alt="Storytale Web Wasm Gallery" src="../../assets/wasm-stories-gallery-dark.webp#only-dark" />
+</p>
 
 ### Development Server
 ```bash
@@ -134,3 +144,13 @@ You can also specify a specific simulator device ID via Gradle property:
 | **Web (Wasm)** | `:wasmJsBrowserStoriesRun` | Browser (Wasm GC) | Static `.wasm` & `.html` |
 | **Android** | `:androidStoriesRun` | Device / Emulator via ADB | `<module>-androidTest.apk` |
 | **iOS** | `:iosSimulatorArm64StoriesRun` / `:iosX64StoriesRun` | iOS Simulator via `simctl` | iOS `.app` bundle |
+
+---
+
+## Next Steps
+
+- Follow the hands-on starter tutorial in **[Writing Your First Story](../getting-started/first-story.md)**.
+- Configure dynamic state controls in **[Parameters & State](parameters.md)**.
+- Wrap stories in consistent theme scaffoldings in **[Decorators & Theming](decorators.md)**.
+- Browse the full Kotlin Multiplatform API contract in the **[API Reference](https://aryapreetam.github.io/storytale/api/)**.
+
